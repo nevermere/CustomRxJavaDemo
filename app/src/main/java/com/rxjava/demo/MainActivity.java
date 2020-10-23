@@ -41,14 +41,17 @@ public class MainActivity extends AppCompatActivity {
                 emitter.onNext("上游开始发送数据" + Thread.currentThread().getName());
                 emitter.onComplete();
             }
-        }).map(new Func2<String, Double>() {
+        })
+                .subscribeOn(Schedulers.mainThread())
+                .map(new Func2<String, Double>() {
 
-            @Override
-            public Double invoke(String s) {
-                Log.i("RxJava", "------map操作符数据转换------" + Thread.currentThread().getName());
-                return 20.0;
-            }
-        }).subscribeOn(Schedulers.io())
+                    @Override
+                    public Double invoke(String s) {
+                        Log.i("RxJava", "------map操作符数据转换------" + Thread.currentThread().getName());
+                        return 20.0;
+                    }
+                })
+                .subscribeOn(Schedulers.io())
                 .doOnNext(new Func1<Double>() {
 
                     @Override
@@ -56,7 +59,20 @@ public class MainActivity extends AppCompatActivity {
                         Log.i("RxJava", "------doOnNext操作符------" + Thread.currentThread().getName());
                         return 15.0;
                     }
-                }).observerOn(Schedulers.mainThread())
+                })
+                .filter(new Func1<Double>() {
+
+                    @Override
+                    public Double invoke(Double aDouble) {
+                        Log.i("RxJava", "------filter操作符------" + Thread.currentThread().getName());
+
+                        if (aDouble > 0) {
+                            return -100.0;
+                        }
+                        return aDouble;
+                    }
+                })
+                .observerOn(Schedulers.mainThread())
                 .subscribe(new Observer<Double>() {
 
                     @Override

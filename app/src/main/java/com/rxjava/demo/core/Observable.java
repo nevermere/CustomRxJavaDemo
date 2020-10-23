@@ -15,6 +15,9 @@ public class Observable<T> {
         this.mSource = source;
     }
 
+    /**
+     * 创建上游虚假对象
+     */
     public static <T> Observable<T> create(ObservableOnSubscribe<T> source) {
         return new Observable<T>(source);
     }
@@ -25,6 +28,14 @@ public class Observable<T> {
     public Observable<T> doOnNext(Func1<T> func1) {
         DoOnNextObservable<T> doOnNextObservable = new DoOnNextObservable<>(mSource, func1);
         return new Observable<T>(doOnNextObservable);
+    }
+
+    /**
+     * filter过滤操作符
+     */
+    public Observable<T> filter(Func1<T> func1) {
+        FilterObservable<T> filterObservable = new FilterObservable<>(mSource, func1);
+        return new Observable<T>(filterObservable);
     }
 
     /**
